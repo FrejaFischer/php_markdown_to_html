@@ -21,13 +21,31 @@ function markdown2html(string $code): string {
     $blockOngoing = false;  // It will allow tracking the last iteration of a code block
     $blockquoteOpen = false;
 
-    $code = str_replace("\n", '\r\n', $code);
-    $code = explode('\r\n', $code);
+    $code = str_replace("\n", '\n', $code);
+    $code = explode('\n', $code);
+    // $code = str_replace("\n", '\r\n', $code);
+    // $code = explode('\r\n', $code);
     
     foreach($code as $line) {
         $line = trim($line);
 
-        // "<" and ">" are replaced by their corresponding character entities
+        // **Check for blockquote before replacing `<` and `>`**
+        if (substr($line, 0, 1) === '>') {
+            $html .= '<blockquote>';
+            $blockquoteOpen = true;
+            $html .= substr($line, 2) . '<br>';
+            continue;
+            // $html .= '<blockquote>' . substr($line, 1) . '<br>';
+            // $blockquoteOpen = true;
+            // continue; // Move to the next line to avoid extra processing
+        }
+        if ($blockquoteOpen) {
+            // If we encounter a non-blockquote line, close the blockquote
+            $html .= '</blockquote>';
+            $blockquoteOpen = false;
+        }
+
+        // // "<" and ">" are replaced by their corresponding character entities
         $line = str_replace('<', '&lt;', $line);
         $line = str_replace('>', '&gt;', $line);
 
@@ -73,20 +91,17 @@ function markdown2html(string $code): string {
         $line = replaceURLs($line);
         
         if (substr($line, 0, 3) === '###') {
-            $html .= '<h3>' . substr($line, 3) . '</h3>';
+            $html .= '<h3>' . substr($line, 4) . '</h3>';
         } elseif (substr($line, 0, 2) === '##') {
-            $html .= '<h2>' . substr($line, 2) . '</h2>';
+            $html .= '<h2>' . substr($line, 3) . '</h2>';
         } elseif (substr($line, 0, 1) === '#') {
-            $html .= '<h1>' . substr($line, 1) . '</h1>';
+            $html .= '<h1>' . substr($line, 2) . '</h1>';
         } elseif (substr($line, 0, 2) === '- ') {
             if (!$ulOpen) {
                 $html .= '<ul>';                    
                 $ulOpen = true;
             }
             $html .= '<li>' . substr($line, 2) . '</li>';
-        } elseif (substr($line, 0, 1) === '>') {
-            $html .= '<blockquote>' . substr($line, 1) . '<br>';
-            $blockquoteOpen = true;
         } elseif (isOL($line)) {
             if (!$olOpen) {
                 $html .= '<ol>';                    
@@ -106,8 +121,12 @@ function markdown2html(string $code): string {
                 $blockOngoing = false;
             }
             $html .= $line . '<br>';
-        }
+        } 
     }
+    // // Close any open blockquote at the end
+    // if ($blockquoteOpen) {
+    //     $html .= '</blockquote>';
+    // }
     return $html;
 }
 
