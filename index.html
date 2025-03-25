@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/script.js" type="module"></script>
+</head>
+<body>
+    <header>
+        <h1>Markdown to HTML Converter</h1>
+    </header>
+    <main>
+        <form id="frmMarkdown">
+            <fieldset>
+                <label for="txtMarkdown">Markdown code</label>
+                <textarea id="txtMarkdown" rows="10"></textarea>
+                <input type="submit" value="Convert"></input>
+            </fieldset>
+        </form>
+        <div id="output">
+            <section id="sectionHTML" hidden><pre></pre></section>
+            <section id="sectionOutput" hidden></section>
+        </div>
+    </main>
+    <footer>
+        <p>
+            &copy; 2021-2024 Arturo Mora-Rioja
+        </p>
+    </footer>
+</body>
+</html>
