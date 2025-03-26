@@ -29,23 +29,26 @@ function markdown2html(string $code): string {
     foreach($code as $line) {
         $line = trim($line);
 
-        // **Check for blockquote before replacing `<` and `>`**
+        // Check for blockquote before replacing `<` and `>`
         if (substr($line, 0, 1) === '>') {
-            $html .= '<blockquote>';
-            $blockquoteOpen = true;
+            
+            if(!$blockquoteOpen) {
+                $html .= '<blockquote>';
+                $blockquoteOpen = true;
+            }
+
             $html .= substr($line, 2) . '<br>';
-            continue;
-            // $html .= '<blockquote>' . substr($line, 1) . '<br>';
-            // $blockquoteOpen = true;
-            // continue; // Move to the next line to avoid extra processing
+            continue; // Move to the next line to avoid extra processing
         }
+
+        // If new line is not a continue of a blockquote, then close the block quote
         if ($blockquoteOpen) {
             // If we encounter a non-blockquote line, close the blockquote
             $html .= '</blockquote>';
             $blockquoteOpen = false;
         }
 
-        // // "<" and ">" are replaced by their corresponding character entities
+        // "<" and ">" are replaced by their corresponding character entities (to avoid injection of JavaScript)
         $line = str_replace('<', '&lt;', $line);
         $line = str_replace('>', '&gt;', $line);
 
@@ -110,10 +113,8 @@ function markdown2html(string $code): string {
             $html .= '<li>' . substr($line, 2) . '</li>';
         } elseif ($line === '---') {
             $html .= '<hr>';
-        } elseif ($line === '' && $blockquoteOpen) {
-            $html .= '</blockquote>';
-            $blockquoteOpen = false;
         } elseif (!$blockOngoing && !$blockquoteOpen) {
+            // Normal paragraf
             $html .= '<p>' . $line . '</p>';
         } else {
             // A block of code has just been closed in this iteration
@@ -123,10 +124,10 @@ function markdown2html(string $code): string {
             $html .= $line . '<br>';
         } 
     }
-    // // Close any open blockquote at the end
-    // if ($blockquoteOpen) {
-    //     $html .= '</blockquote>';
-    // }
+    // Close any open blockquote at the end
+    if ($blockquoteOpen) {
+        $html .= '</blockquote>';
+    }
     return $html;
 }
 

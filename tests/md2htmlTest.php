@@ -24,13 +24,14 @@ class md2htmlTest extends TestCase
     public static function ConvertPasses(): array
     {
         return [
+            ['This is a paragraf', '<p>This is a paragraf</p>'], // Normal text
             ['# First', '<h1>First</h1>'], // Header one
             ['## Second', '<h2>Second</h2>'], // Header two
             ['### Third', '<h3>Third</h3>'], // Header three
             ['This a **Bold** test', '<p>This a <strong>Bold</strong> test</p>'], // Bold
             ['This a *Italic* test', '<p>This a <em>Italic</em> test</p>'], // Italic
-            // ['> This a Blockquote', '<blockquote>This a Blockquote<br></blockquote>'], // Blockquote
-            // ['> This is a quote \n multiple lines', '<blockquote>This is a quote<br>multiple lines<br></blockquote>'], // Multi lined Blockquote
+            ['> This a Blockquote', '<blockquote>This a Blockquote<br></blockquote>'], // Blockquote
+            ['> This is a quote \n > multiple lines', '<blockquote>This is a quote<br>multiple lines<br></blockquote>'], // Multi lined Blockquote
         ];
     }
 }
